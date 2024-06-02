@@ -1,0 +1,174 @@
+npx create-next-app .
+then 
+npm i -g vercel
+then 
+vercel
+then click on 
+? Link to existing project? no
+? Want to modify these settings? no
+then go to vercel webiste and click on class7todo which's the project name 
+then go to storage and click on make connection with your data base, Here we create database that's why we made connection if it't not made then you have to make the database and only one time you can make 
+then go to project and you will find domain Kinzer Mir's projects so click on domain 
+
+then click on my database
+then click on on your left side:- Get Started 
+
+Get Started :- 
+first step : Connect Project which we have already connected and past this vercel link into terminal 
+run vercel link in the terminal to link to the project locally.
+
+2nd step : vercel env pull .env.development.local  install in terminal from this the database env file will make means env which have all credentials of our databse 
+
+3rd step : run in terminal npm install @vercel/postgres  The @vercel/postgres package is likely a library provided by Vercel to interact with PostgreSQL databases means it connect our project with database
+This command will download and install the package and its dependencies, updating your package.json and package-lock.json files to include @vercel/postgres.
+
+4th step : import { sql } from "@vercel/postgres"; i wrote here just for interpretaion so here sql make connection between postgres and our project ( and posgres is our database)
+const {rows} means destructuring is a syntax that allows you to extract values from arrays or properties from objects into distinct variables
+give instructionto copilot "create a sql table todo {id bigint not serial,text:string,completed:boolean}", 
+and in result you will get 
+const { rows } = await sql`
+    CREATE TABLE todo (
+        id BIGINT NOT NULL,   //BIGINT: The data type for the column, representing a large integer. This can store very large integer values. NOT NULL: This constraint ensures that the id column cannot have NULL values. Each id must have a value.
+        text VARCHAR(255),   //The data type for the column, representing a variable-length string with a maximum of 255 characters.
+        completed BOOLEAN   //completed: The name of the column.BOOLEAN: The data type for the column, representing a boolean value (true or false). It is typically used to indicate the status of something, such as whether a task is completed or not.
+    );
+`;
+
+After that create route means folder in app under the name create (page.tsx) in page.tsx past the code which is mentioned in step4 vercel website which is 
+
+import { sql } from "@vercel/postgres";
+
+export default async function Cart({
+  params
+} : {
+  params: { user: string }
+}): Promise<JSX.Element> {
+  const { rows } = await sql`SELECT * from CARTS where user_id=${params.user}`;
+
+  return (
+    <div>
+      {rows.map((row) => (
+        <div key={row.id}>
+          {row.id} - {row.quantity}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+but in above code we make slide changes we donn't write the rows which above mentioned we wrtie the rows which i generate through chatpgt which is 
+const { rows } = await sql`
+    CREATE TABLE todo2 (         // todo2 is cus of todo and todo1 is already created that's why i gave another name 
+        id BIGINT NOT NULL,
+        text VARCHAR(255),
+        completed BOOLEAN
+    );
+`;
+
+then npm run dev and http://localhost:3000/create
+after that go to vercel project class7todo and click on data and in data open data and select todo2
+our table is create.
+after that we have to make API's to insert data into it 
+
+create api folder then api folder and craete routes.ts file ts file is bec of we are'nt use any react component.
+
+routes.ts:- in that we make api 
+export async function GET(req: NextRequest)
+This function is exported as the handler for HTTP GET requests.
+
+const {rows} = await sqlselect * from todo2;
+This line executes a SQL query to select all rows (SELECT *) from the todo2 table.
+The result of the query, containing the fetched rows, is destructured from the response.
+
+If the query is successful, the fetched rows are returned in JSON format with a status code of 200 (OK) using NextResponse.json(rows, {status: 200}).
+If an error occurs during execution, the error object is returned in JSON format with a status code of 500 (Internal Server Error) using NextResponse.json(err, {status: 500}).
+
+routes.ts interpretaion :-
+The process of creating and testing CRUD operations for the todo2 API involves several steps. First, you create API handlers for GET, POST, DELETE, PATCH, and PUT requests to interact with the todo2 table in your database. The GET method fetches all records from the todo2 table. The POST method inserts a new record into the todo2 table. The DELETE method deletes a record from the todo2 table based on the id. The PATCH method updates the completed status of a record in the todo2 table based on the id. The PUT method updates the text of a record in the todo2 table based on the id.
+
+Key Difference between PUT and PATCH:- 
+Patch me humne completed ko change kia oor PUT me humne text ko change kia cuz dono text & completed aik he time pr change nahe ho sakte islie alag alag modify kia 
+
+Post man interpretaion :-
+After implementing the handlers, you use Postman to test each endpoint. In Postman, create a new collection named todo2. Add requests for each CRUD operation. For the GET request, set the method to GET and the URL to http://localhost:3000/api/todo. This fetches all records from the todo2 table and initially returns an empty array since no data has been posted. For the POST request, set the method to POST and the URL to http://localhost:3000/api/todo. In the body, use raw JSON to insert a new record, such as {"id": "1", "text": "Tailwindcss", "completed": false}. This returns the inserted record with a status of 200. Repeat this process to add more records.
+
+For the DELETE request, set the method to DELETE and the URL to http://localhost:3000/api/todo. In the body, use raw JSON to specify the id of the record to delete, such as {"id": "1"}. This returns a message indicating the record was deleted. For the PATCH request, set the method to PATCH and the URL to http://localhost:3000/api/todo. In the body, use raw JSON to update the completed status of a record, such as {"id": "2", "completed": true}. This returns the updated record with a status of 200. For the PUT request, set the method to PUT and the URL to http://localhost:3000/api/todo. In the body, use raw JSON to update the text of a record, such as {"id": "2", "text": "Learn React"}. This returns the updated record with a status of 200.
+
+To summarize, start with the GET request to verify the initial state, use the POST request to add new records, verify the added records with another GET request, update records using PATCH and PUT requests, and delete records using the DELETE request. This process helps you thoroughly test and verify each part of your API, ensuring all CRUD operations work as expected.
+
+Create todostyle folder and page.tsx will be it's file in that write tailwind css properties and use usetate 
+
+then create todo folder and it's file page.tsx in that file copy the code of todostyle folder and past into todo folder after that 
+(//fetch data from server start) from that go ahead so below this line create a function to fetch data 
+ye data hum fetch krnge ge {"/api/todo} se oor is data ko store krdenge setTodos me kunke agr hum api me data add kre postman me ja kr data ko add kre tu woh data hume local host api/ todo me bh show hoga oor issi data ko humne {todos, setTodos} todos me store krdia likn jb jb data add hoga ya data me changes honge uske lie humne setTodos banaya oor issi lie {"/api/todo"} me ane wale data ko humne setTodos me store kia taake data yani api wala yani postman wala jb waha change hu tu yaha iss file me bh changes ho iss file ka name hai todo
+The fetchData function asynchronously fetches data from the /api/todo endpoint and updates the todos state with the retrieved data.
+
+then
+const [input, setInput] = useState("");   //This line initializes the state variable input with an empty string as the initial value.
+<input
+    className="border border-gray-300 rounded-md px-2 py-1 text-black"
+    type="text"
+    placeholder="Enter todo"
+    value={input}
+    onChange={(e) => setInput(e.target.value)} Updates the input state with the current value of the input field whenever it changes.
+/>
+
+then create below function to post the data into input in text form 
+ async function handleAdd() {
+         //call POST method to pass id, text, completed
+        const res = await fetch("/api/todo",{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/jason",
+            },// id: Date.now is builtin function which generate number of mili-seconds which will be our new unique id
+            body: JSON.stringify({id: Date.now(), text: input, completed: false})
+        });
+        setInput("");
+        fetchData();
+    }
+
+then apply handleAdd into 
+                <AiFillPlusCircle 
+                onClick={handleAdd}
+                className=" text-green-500 text-3xl"/>
+                </button>
+              
+ab data tu post kr lia ab hamare pass DELETE wala function hona chya 
+for deletion we need id we make function and in function we will pas paramters bec of id and hadleDelete on button
+                <span>
+                <AiFillDelete
+                  onClick={() => handleDelete(todo.id)}
+                  className="text-red-600"
+{()=> handleDelete(todo.id)} we applied here callback function bec we passed paramters above
+
+interpretation of DELETE ^ jo oper humne delelte krne ke lie code banaya 
+fetch: The fetch function is used to make an HTTP request.
+/api/todo: This is the endpoint to which the DELETE request is sent. In this context, it is assumed that your server handles DELETE requests at this endpoint to delete a todo item.
+method: "DELETE": Specifies that the request method is DELETE.
+headers: An object containing any headers you want to include in your request. Here, "Content-Type": "application/json" indicates that the body of the request will be in JSON format.
+body: The body of the request, which is the payload you send to the server. JSON.stringify({ id }) converts the id into a JSON string so that the server can parse it.
+
+text:- 
+similarly apply handleCompleted function
+then create function of handleText then handleSave also create this 
+const [editText, setEditText] = useState<{
+    id: number;
+    text: string;
+    completed: boolean;
+  }>();
+
+GET /tasks: Retrieve a list of all tasks.
+POST /tasks: Create a new task.
+PUT /tasks/{id}: Update an existing task with a specific ID.
+DELETE /tasks/{id}: Delete a task with a specific ID.
+
+vercel env pull .env.development.local
+npm install @vercel/postgres
+
+ from copilot
+CREATE TABLE todo (
+    id BIGINT NOT NULL,
+    text VARCHAR(255),
+    completed BOOLEAN
+);
+
